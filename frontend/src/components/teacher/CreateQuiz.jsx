@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 const generateOptionsUsingPuter = async (questionText) => {
-  const prompt = `Generate 4 plausible multiple-choice options for the following quiz question. Make sure one option is clearly correct and three are plausible but incorrect. Format your response as exactly 4 lines:
+  const prompt = `Generate 4 plausible multiple-choice options for the following quiz question. Make sure one option is clearly correct and three are plausible but incorrect the order of option should be entirely random. Format your response as exactly 4 lines :
 
 Question: "${questionText}"
 
@@ -71,9 +71,13 @@ Please provide realistic and educational options.`;
     }
   } catch (error) {
     console.error("Error generating options:", error);
+    if (retries > 0) {
+      console.log(`Retrying... attempts left: ${retries}`);
+      return generateOptionsWithRetry(prompt, retries - 1);
+    }
     throw error;
   }
-};
+}
 
 const CreateQuiz = () => {
   const toast = useToast();

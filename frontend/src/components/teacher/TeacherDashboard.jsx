@@ -44,14 +44,12 @@ import {
 function TeacherDashboard() {
   const { user } = useContext(AuthContext);
   const [courses, setCourses] = useState([]);
-  const [quizzes, setQuizzes] = useState([]);
   const [stats, setStats] = useState({
     totalCourses: 0,
     totalQuizzes: 0,
     totalStudents: 0,
     recentSubmissions: 0
   });
-  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const toast = useToast();
@@ -69,51 +67,19 @@ function TeacherDashboard() {
             Authorization: `Bearer ${localStorage.getItem("access")}`,
           },
         });
-        setCourses(coursesResponse.data.courses || []);
+        
+        const coursesData = coursesResponse.data.courses || coursesResponse.data || [];
+        setCourses(coursesData);
 
-        // Fetch teacher's quizzes
-        try {
-          const quizzesResponse = await axios.get("http://127.0.0.1:8000/api/teacher/quizzes", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access")}`,
-            },
-          });
-          setQuizzes(quizzesResponse.data || []);
-        } catch (err) {
-          console.log("Teacher quizzes endpoint not available");
-          setQuizzes([]);
-        }
+        // Calculate basic stats from available data
+        const calculatedStats = {
+          totalCourses: coursesData.length,
+          totalQuizzes: 0, // Will be updated if we can fetch quiz data
+          totalStudents: coursesData.reduce((total, course) => total + (course.enrolled_students || 0), 0),
+          recentSubmissions: 0
+        };
 
-        // Fetch statistics
-        try {
-          const statsResponse = await axios.get("http://127.0.0.1:8000/api/teacher/stats", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access")}`,
-            },
-          });
-          setStats(statsResponse.data);
-        } catch (err) {
-          console.log("Teacher stats endpoint not available");
-          setStats({
-            totalCourses: coursesResponse.data.courses?.length || 0,
-            totalQuizzes: 0,
-            totalStudents: 0,
-            recentSubmissions: 0
-          });
-        }
-
-        // Fetch recent activity
-        try {
-          const activityResponse = await axios.get("http://127.0.0.1:8000/api/teacher/recent-activity", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access")}`,
-            },
-          });
-          setRecentActivity(activityResponse.data || []);
-        } catch (err) {
-          console.log("Recent activity endpoint not available");
-          setRecentActivity([]);
-        }
+        setStats(calculatedStats);
 
       } catch (error) {
         console.error("Failed to fetch teacher data:", error);
@@ -129,7 +95,11 @@ function TeacherDashboard() {
       }
     };
 
-    fetchTeacherData();
+    if (user && (user.typeofrole === 'teacher' || user.typeofrole === 'admin')) {
+      fetchTeacherData();
+    } else {
+      setLoading(false);
+    }
   }, [user, toast]);
 
   if (loading) {
@@ -211,7 +181,7 @@ function TeacherDashboard() {
             <Heading size="md" color="teal.600">Quick Actions</Heading>
           </CardHeader>
           <CardBody>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <Button
                 leftIcon={<Icon as={FaPlus} />}
                 colorScheme="teal"
@@ -223,26 +193,15 @@ function TeacherDashboard() {
                 Create New Quiz
               </Button>
               <Button
-                leftIcon={<Icon as={FaEdit} />}
+                leftIcon={<Icon as={FaQuestionCircle} />}
                 colorScheme="blue"
                 variant="outline"
                 size="lg"
-                onClick={() => navigate('/teacher/manage-quizzes')}
+                onClick={() => navigate('/student/quizzes')}
                 _hover={{ transform: 'translateY(-2px)' }}
                 transition="all 0.2s"
               >
-                Manage Quizzes
-              </Button>
-              <Button
-                leftIcon={<Icon as={FaChartBar} />}
-                colorScheme="purple"
-                variant="outline"
-                size="lg"
-                onClick={() => navigate('/teacher/analytics')}
-                _hover={{ transform: 'translateY(-2px)' }}
-                transition="all 0.2s"
-              >
-                View Analytics
+                Browse All Quizzes
               </Button>
             </SimpleGrid>
           </CardBody>
@@ -263,7 +222,6 @@ function TeacherDashboard() {
                     _hover={{ bg: useColorModeValue("gray.100", "gray.600") }}
                     transition="all 0.2s"
                     cursor="pointer"
-                    onClick={() => navigate(`/teacher/course/${course.code}`)}
                   >
                     <CardBody>
                       <VStack spacing={2} align="start">
@@ -293,56 +251,26 @@ function TeacherDashboard() {
           </CardBody>
         </Card>
 
-        {/* Recent Quiz Activity */}
+        {/* Getting Started Guide */}
         <Card bg={cardBg} w="full">
           <CardHeader>
-            <Heading size="md" color="teal.600">Recent Quiz Activity</Heading>
+            <Heading size="md" color="teal.600">Getting Started</Heading>
           </CardHeader>
           <CardBody>
-            {recentActivity.length > 0 ? (
-              <TableContainer>
-                <Table variant="simple" size="sm">
-                  <Thead>
-                    <Tr>
-                      <Th>Quiz</Th>
-                      <Th>Course</Th>
-                      <Th>Student</Th>
-                      <Th>Score</Th>
-                      <Th>Date</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {recentActivity.slice(0, 5).map((activity, index) => (
-                      <Tr key={index}>
-                        <Td fontWeight="medium">{activity.quiz_title}</Td>
-                        <Td>
-                          <Badge colorScheme="gray" variant="subtle">
-                            {activity.course_code}
-                          </Badge>
-                        </Td>
-                        <Td>{activity.student_name}</Td>
-                        <Td>
-                          <Badge 
-                            colorScheme={activity.score >= 70 ? "green" : activity.score >= 50 ? "yellow" : "red"}
-                          >
-                            {activity.score}%
-                          </Badge>
-                        </Td>
-                        <Td color="gray.500">{activity.submitted_at}</Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
-            ) : (
-              <VStack spacing={4} py={8} textAlign="center">
-                <Icon as={FaClock} w={12} h={12} color="gray.400" />
-                <Text color="gray.600">No recent activity.</Text>
-                <Text fontSize="sm" color="gray.500">
-                  Student quiz submissions will appear here.
-                </Text>
-              </VStack>
-            )}
+            <VStack spacing={3} align="start">
+              <Text>
+                📚 <Text as="span" fontWeight="semibold">Step 1:</Text> Get assigned to courses by your administrator
+              </Text>
+              <Text>
+                ✏️ <Text as="span" fontWeight="semibold">Step 2:</Text> Create quizzes for your courses using our AI-powered question generator
+              </Text>
+              <Text>
+                👥 <Text as="span" fontWeight="semibold">Step 3:</Text> Students can then take your quizzes and view their results
+              </Text>
+              <Text>
+                📊 <Text as="span" fontWeight="semibold">Step 4:</Text> Monitor student progress and performance
+              </Text>
+            </VStack>
           </CardBody>
         </Card>
       </VStack>

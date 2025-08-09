@@ -25,6 +25,7 @@ function Home() {
 
   useEffect(() => {
     // Auto-redirect authenticated users to their respective dashboards
+    console.log(user)
     if (user) {
       if (user.typeofrole === 'student') {
         navigate('/student');

@@ -22,7 +22,8 @@ function Explanation({ questionText, optionText }) {
   const [open, setOpen] = useState(false);
   const toast = useToast();
 
-  const fetchExplanation = () => {
+  // Retry wrapper function
+  const fetchExplanation = (retry = 1) => {
     if (open) {
       setOpen(false);
       return;
@@ -36,28 +37,33 @@ function Explanation({ questionText, optionText }) {
     setLoading(true);
 
     const prompt = `Explain in about 50 words why the answer "${optionText}" to the question "${questionText}" is wrong.`;
-    console.log(prompt)
-    // puter.ai.chat(`What is life?`).then(puter.print);
+    // console.log(prompt);
+
     puter.ai.chat(prompt)
-    
       .then((response) => {
-        // console.log(response.message.content)
         if (response && response.message.content && response.message.content.length > 0) {
           setExplanation(response.message.content);
         } else {
           setExplanation("No explanation available.");
         }
+        console.log("Explanation:", response.message.content);
         setLoading(false);
         setOpen(true);
       })
       .catch(() => {
-        toast({
-          title: "Failed to get explanation",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-        setLoading(false);
+        if (retry > 0) {
+          console.log(`Retrying... attempts left: ${retry}`);
+          // Retry once more
+          fetchExplanation(retry - 1);
+        } else {
+          toast({
+            title: "Failed to get explanation",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setLoading(false);
+        }
       });
   };
 
