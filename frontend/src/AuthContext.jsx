@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   const logout = () => {
     localStorage.removeItem("access");
@@ -55,7 +56,8 @@ export function AuthProvider({ children }) {
         if (
           error.response?.status === 401 &&
           !originalRequest._retry &&
-          localStorage.getItem("refresh")
+          localStorage.getItem("refresh") &&
+          user // Only try to refresh if user is actually logged in
         ) {
           originalRequest._retry = true;
           try {
@@ -80,34 +82,71 @@ export function AuthProvider({ children }) {
     );
 
     return () => axios.interceptors.response.eject(interceptor);
-  }, []);
+  }, [user]); // Add user as dependency
 
   useEffect(() => {
-    const access = localStorage.getItem("access");
-    const refresh = localStorage.getItem("refresh");
+    const initializeAuth = async () => {
+      const access = localStorage.getItem("access");
+      const refresh = localStorage.getItem("refresh");
 
-    if (access && refresh) {
-      axios
-        .get("http://127.0.0.1:8000/api/profile", {
+      // If no tokens, user is not logged in
+      if (!access || !refresh) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/api/profile", {
           headers: { Authorization: `Bearer ${access}` },
-        })
-        .then((res) => {
-          const { username, role, enrolled_courses } = res.data;
-          setUser({
-            username,
-            typeofrole: role,
-            coursesEnrolled: role === "student" ? enrolled_courses : [],
-          });
-        })
-        .catch((err) => {
-          console.error("Failed to fetch profile on mount", err);
-          logout();
         });
-    }
-  }, []);
+
+        const { username, role, enrolled_courses } = res.data;
+        setUser({
+          username,
+          typeofrole: role,
+          coursesEnrolled: role === "student" ? enrolled_courses : [],
+        });
+      } catch (err) {
+        console.error("Failed to fetch profile on mount", err);
+        
+        // If profile fetch fails with 401, try to refresh token once
+        if (err.response?.status === 401 && refresh) {
+          try {
+            const refreshRes = await axios.post("http://127.0.0.1:8000/api/token/refresh", {
+              refresh,
+            });
+
+            const newAccess = refreshRes.data.access;
+            localStorage.setItem("access", newAccess);
+
+            // Try fetching profile again with new token
+            const profileRes = await axios.get("http://127.0.0.1:8000/api/profile", {
+              headers: { Authorization: `Bearer ${newAccess}` },
+            });
+
+            const { username, role, enrolled_courses } = profileRes.data;
+            setUser({
+              username,
+              typeofrole: role,
+              coursesEnrolled: role === "student" ? enrolled_courses : [],
+            });
+          } catch (refreshError) {
+            console.error("Token refresh failed during initialization:", refreshError);
+            logout(); // Clear invalid tokens
+          }
+        } else {
+          logout(); // Clear invalid tokens
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
+  }, []); // Empty dependency array - only run once on mount
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
