@@ -1,7 +1,11 @@
 // quizAiFunctions.js
-
+import usePuterScript from "../UsePuterScript";
 // Generate plausible MCQ options for a given question
 export const generateOptionsUsingPuter = async (questionText) => {
+    // const puterLoaded = usePuterScript();
+    // if (!puterLoaded) {
+    //   return Promise.reject(new Error("Puter script not loaded"));
+    // }
   const prompt = `Generate 4 plausible multiple-choice options for the following quiz question.
 Make sure one option is clearly correct and three are plausible but incorrect.
 The order of options should be random.
@@ -52,6 +56,11 @@ Question: "${questionText}"
 
 // Generate a full quiz as JSON
 export const generateFullQuizUsingPuter = async (description, difficulty, numQuestions, courseName) => {
+    // const puterLoaded = usePuterScript();
+    // if (!puterLoaded) {
+    //     console.log("Puter script not loaded, cannot generate quiz");
+    //   return Promise.reject(new Error("Puter script not loaded"));
+    // }
   const prompt = `
 Generate ${numQuestions} multiple-choice quiz questions as a valid JSON array.
 Each string must escape internal double quotes using \\".
