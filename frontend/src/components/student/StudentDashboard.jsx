@@ -47,7 +47,7 @@ function StudentDashboard() {
     const fetchDashboardData = async () => {
       try {
         // Fetch enrolled courses
-        const coursesResponse = await axios.get("http://127.0.0.1:8000/api/courses", {
+        const coursesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/courses`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access")}`,
           },
@@ -56,7 +56,7 @@ function StudentDashboard() {
 
         // Fetch recent quiz attempts (you may need to create this endpoint)
         try {
-          const quizzesResponse = await axios.get("http://127.0.0.1:8000/api/student/recent-quizzes", {
+          const quizzesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/student/recent-quizzes`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access")}`,
             },
@@ -69,7 +69,7 @@ function StudentDashboard() {
 
         // Fetch student statistics
         try {
-          const statsResponse = await axios.get("http://127.0.0.1:8000/api/student/stats", {
+          const statsResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/student/stats`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access")}`,
             },

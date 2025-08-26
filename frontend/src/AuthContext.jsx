@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/token", {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/token`, {
         username,
         password,
       });
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("refresh", refresh);
 
       // Fetch profile after login
-      const profileRes = await axios.get("http://127.0.0.1:8000/api/profile", {
+      const profileRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/profile`, {
         headers: {
           Authorization: `Bearer ${access}`,
         },
@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
         ) {
           originalRequest._retry = true;
           try {
-            const refreshRes = await axios.post("http://127.0.0.1:8000/api/token/refresh", {
+            const refreshRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/token/refresh`, {
               refresh: localStorage.getItem("refresh"),
             });
 
@@ -96,7 +96,7 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/profile", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/profile`, {
           headers: { Authorization: `Bearer ${access}` },
         });
 
@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
         // If profile fetch fails with 401, try to refresh token once
         if (err.response?.status === 401 && refresh) {
           try {
-            const refreshRes = await axios.post("http://127.0.0.1:8000/api/token/refresh", {
+            const refreshRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/token/refresh`, {
               refresh,
             });
 
@@ -120,7 +120,7 @@ export function AuthProvider({ children }) {
             localStorage.setItem("access", newAccess);
 
             // Try fetching profile again with new token
-            const profileRes = await axios.get("http://127.0.0.1:8000/api/profile", {
+            const profileRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/profile`, {
               headers: { Authorization: `Bearer ${newAccess}` },
             });
 

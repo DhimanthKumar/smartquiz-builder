@@ -24,7 +24,7 @@ APPEND_SLASH = False
 SECRET_KEY = 'django-insecure-^tpqlpyq2sipa4+a*3)d+ii-dspf$@*2bwn63ae01_yjy@+bjy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost' , '127.0.0.1','localhost:8000','54.91.222.225']
 
@@ -87,7 +87,7 @@ DATABASES = {
 }
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    '*'# React dev server
+    # '*'# React dev server
 ]
 
 # Password validation

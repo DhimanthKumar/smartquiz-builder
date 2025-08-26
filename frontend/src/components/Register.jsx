@@ -26,7 +26,7 @@ function Register() {
     e.preventDefault();
 
     try {
-      await axios.post(`http://127.0.0.1:8000/api/register/student`, formData);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/register/student`, formData);
       toast({
         title: 'Registration successful',
         status: 'success',

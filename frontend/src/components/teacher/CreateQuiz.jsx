@@ -33,7 +33,7 @@ const CreateQuiz = () => {
   ]);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/teacher/courses", {
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/teacher/courses`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
     })
     .then(res => setCourses(res.data.courses || []))
@@ -103,7 +103,7 @@ const handleSubmit = async () => {
   };
 
   try {
-    await axios.post("http://127.0.0.1:8000/api/create_quiz", payload, {
+    await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/create_quiz`, payload, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("access")}`,
       },
