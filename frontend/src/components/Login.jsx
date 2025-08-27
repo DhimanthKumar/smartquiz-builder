@@ -76,6 +76,11 @@ function Login() {
             <Button type="submit" colorScheme="teal" w="full">
               Login
             </Button>
+            <Box mb={4} p={3} bg="gray.700" rounded="md" color="yellow.300" textAlign="center">
+      <strong>Test Credentials:</strong><br />
+      Username: <code>test</code> <br />
+      Password: <code>test@123</code>
+    </Box>
           </Stack>
         </form>
       </Box>
