@@ -62,7 +62,7 @@ function TeacherDashboard() {
     const fetchTeacherData = async () => {
       try {
         // Fetch teacher courses
-        const coursesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}0/api/teacher/courses`, {
+        const coursesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/teacher/courses`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access")}`,
           },

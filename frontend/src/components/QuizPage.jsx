@@ -26,7 +26,7 @@ function QuizPage() {
     const fetchQuiz = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}0/api/quiz/${quizId}/take`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/quiz/${quizId}/take`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access")}`,
@@ -78,7 +78,7 @@ function QuizPage() {
         })),
       };
 
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}0/api/quiz/submit`, payload, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/quiz/submit`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access")}`,
         },

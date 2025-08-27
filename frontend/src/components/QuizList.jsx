@@ -39,7 +39,7 @@ function QuizList() {
           for (const courseCode of user.coursesEnrolled) {
             try {
               const response = await axios.get(
-                `${import.meta.env.VITE_API_BASE_URL}0/api/quizzes/${courseCode}`,
+                `${import.meta.env.VITE_API_BASE_URL}/api/quizzes/${courseCode}`,
                 {
                   headers: {
                     Authorization: `Bearer ${localStorage.getItem("access")}`,

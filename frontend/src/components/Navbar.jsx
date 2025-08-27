@@ -112,8 +112,8 @@ const Navbar = () => {
               </HStack>
             </MenuButton>
             <MenuList color="black">
-              <MenuItem as={Text} fontWeight="bold" cursor="default" _hover={{}}>
-                {user.typeofrole.charAt(0).toUpperCase() + user.typeofrole.slice(1)} Account
+              <MenuItem as={Text} fontWeight="bold" cursor="default" _hover={{}}> 
+                {user && user.typeofrole && user.typeofrole.charAt(0).toUpperCase() + user.typeofrole.slice(1)} Account
               </MenuItem>
               <MenuItem onClick={() => navigate(user.typeofrole === 'student' ? '/student' : '/teacher')}>
                 Dashboard
