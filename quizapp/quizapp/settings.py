@@ -15,7 +15,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 APPEND_SLASH = False
-
+frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+backend_url = os.environ.get('BACKEND_URL','127.0.0.1:8000')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-^tpqlpyq2sipa4+a*3)d+ii-dspf$@*2bwn63ae01_yjy@+bjy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost' , '127.0.0.1','localhost:8000','54.91.222.225']
+ALLOWED_HOSTS = ['localhost' , '127.0.0.1','localhost:8000','54.91.222.225',backend_url]
 
 
 # Application definition
@@ -85,7 +86,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
