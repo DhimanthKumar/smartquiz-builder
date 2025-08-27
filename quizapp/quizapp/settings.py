@@ -17,7 +17,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 APPEND_SLASH = False
 frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 backend_url = os.environ.get('BACKEND_URL','127.0.0.1:8000')
-
+if backend_url.startswith('http://'):
+    backend_url=backend_url[7:]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
