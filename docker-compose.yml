@@ -6,6 +6,8 @@ services:
     container_name: quizapp
     ports:
       - "8000:8000"             # Host:Container port mapping
+    environment:
+      - FRONTEND_URL=${FRONTEND_URL}
     volumes:
       - ./quizapp/db:/quizapp/db  # Bind mount for SQLite persistence
       - /home/ubuntu/quizapp/db:/quizapp/db
