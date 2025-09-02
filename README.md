@@ -32,7 +32,7 @@ It uses a **Django backend** with **JWT authentication** and a **React + Chakra 
 - **Frontend**: React, Chakra UI  
 - **Backend**: Django REST Framework (DRF)  
 - **Authentication**: JWT (JSON Web Token)  
-- **Database**: PostgreSQL (update if different)  
+- **Database**: SqlLite3
 - **Containerization**: Docker, Docker Compose  
 - **AI Integration**: [Puter.js](https://github.com/heyPuter/puter/) (open-source)
 
